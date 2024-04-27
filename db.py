@@ -1,6 +1,20 @@
 import psycopg2
 import sys
 
+def connect_to_db():
+    try:
+        conn = psycopg2.connect(
+            dbname='Vehicle Sales',
+            user="postgres",
+            password="psu",
+            host="localhost"
+        )
+        print("Database connection was successful!")
+        return conn
+    except psycopg2.OperationalError as e:
+        print("Unable to connect to the database:", e)
+        sys.exit(1)
+
 def main_menu():
     print("Select an option:")
     print("1: List All Vehicles")
@@ -31,7 +45,8 @@ def add_new_vehicle(cur):
     make = input("Enter make: ")
     model = input("Enter model: ")
     trim = input("Enter trim: ")
-    cur.execute("INSERT INTO Vehicle (make, model, trim) VALUES (%s, %s, %s);", (make, model, trim))
+    vin = input("Enter VIN: ")
+    cur.execute("INSERT INTO Vehicle (make, model, trim, vin) VALUES (%s, %s, %s, %s);", (make, model, trim, vin))
     print("Vehicle added successfully.")
 
 def update_vehicle_condition(cur):
@@ -77,7 +92,7 @@ def add_seller(cur):
     print("Seller added successfully.")
 
 def main():
-    conn = psycopg2.connect("host=localhost dbname=Vehicle Sales user=your_user password=your_password")
+    conn = connect_to_db()
     cur = conn.cursor()
     while True:
         main_menu()
